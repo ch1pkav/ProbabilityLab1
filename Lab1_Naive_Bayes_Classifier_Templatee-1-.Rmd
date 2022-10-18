@@ -237,14 +237,33 @@ naiveBayes <- setRefClass("naiveBayes",
                     score = function(X_test, y_test)
                     {
                       len <<- nrow(y_test)
-                      good_predictions = 0
+                      true_neutral=0
+                      false_neutral=0
+                      true_discrim=0
+                      false_discrim=0
                       for (i in seq(1,len)) {
-                        if (X_test[i,3]==predict(y_test[i,1])) {
-                          good_predictions <- good_predictions + 1
+                        if (X_test[i,3]=="neutral") {
+                          if(predict(y_test[i,1])=="neutral"){
+                            true_neutral<-true_neutral+1
+                          }
+                          else{
+                            false_discrim<-false_discrim+1
+                          }
+                        }
+                        else{
+                          if(predict(y_test[i,1])=="neutral"){
+                            false_neutral<-false_neutral+1
+                          }
+                          else{
+                            true_discrim<-true_discrim+1
+                          }
                         }
                       }
-                      good_predictions<<-good_predictions
-                      results = good_predictions/len
+                      true_neutral<<-true_neutral
+                      false_neutral<<-false_neutral
+                      true_discrim<<-true_discrim
+                      false_discrim<<-false_discrim
+                      results = (true_neutral+true_discrim)/len
                       return(results)
                     }
 ))
@@ -254,20 +273,15 @@ model$fit(X, y)
 model$score(X_test, y_test)
 ```
 ```{r}
-x <-  c(len-good_predictions, good_predictions)
-labels <-  c("Wrong", "Correct")
-
+x <-  c(true_neutral, true_discrim, false_neutral, false_discrim)
+labels <-  c("Actualy neutral", "Actualy discrim", "False neutral", "False discrim" )
 piepercent<- round(100*x/len, 1)
-
-# Give the chart file a name.
-#png(file = "Naive_Bayes_formula.jpg")
-# Plot the chart.
-pie(x, labels = piepercent, main = "Persentage of success",col = rainbow(length(x)))
-legend("bottomright", c("Wrong ansver", "Correct ansver"), cex = 1,
-   fill = rainbow(length(x)))
-
-# Save the file.
-#dev.off()
+collor=c("blue4", "cyan4", "firebrick3", "darkred")
+png(file = "Naive_Bayes_formula.jpg")
+pie(x, labels = piepercent, main = "Persentage of success",col = collor)
+legend("bottomright", labels, cex = 1,
+   fill = collor)
+dev.off()
 ```
 ## Measure effectiveness of your classifier
 

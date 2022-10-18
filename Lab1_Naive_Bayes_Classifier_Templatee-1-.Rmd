@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Lab Assignment 1: Naive Bayes Classifier
 
-### *Name1 Surname1, Name2 Surname2, Name3 Surname3*
+### *Veronika Shevtsova, Arsenii Kazymyr, Teodor Muzychuk*
 
 ## Introduction
 
@@ -131,7 +131,7 @@ library(stringr)
 
 ```{r}
 list.files(getwd())
-list.files("data/0-authors")
+list.files("data/1-discrimination")
 ```
 
 ```{r}
@@ -153,9 +153,8 @@ test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 ```{r}
 X = train[, -length(train)]
 y = train[length(train)]
-X_test = test[, -length(test)]
-y_test = test[length(test),]
-print(y_test)
+X_test = test[-length(test)]
+y_test = test[length(test)]
 
 ```
 
@@ -272,7 +271,12 @@ model = naiveBayes()
 model$fit(X, y)
 model$score(X_test, y_test)
 ```
+
 ```{r}
+true_neutral
+true_discrim
+false_discrim
+false_neutral
 x <-  c(true_neutral, true_discrim, false_neutral, false_discrim)
 labels <-  c("Actualy neutral", "Actualy discrim", "False neutral", "False discrim" )
 piepercent<- round(100*x/len, 1)
@@ -283,6 +287,7 @@ legend("bottomright", labels, cex = 1,
    fill = collor)
 dev.off()
 ```
+
 ## Measure effectiveness of your classifier
 
 -   Note that accuracy is not always a good metric for your classifier.
@@ -300,3 +305,29 @@ below.
 -   List pros and cons of the method. This should include the
     limitations of your method, all the assumption you make about the
     nature of your data etc.
+
+The program is based on Bayer's theorem. In function fit we trained our
+model to recognize neutral and discriminate tweets. For that, we
+calculated probability for each word if it's discriminate or not(using
+bayer's formula). Then, in predict function we calculated probability if
+tweet is discriminate based on our calculations from the previous
+function(split each tweet on words and calculate the probability for
+them, then get product of probabilities of words to be discriminate
+П(P(word\| discriminate)). To do it we calculate probability that the
+tweet is neutral and compare it with probability that the twee will be
+discriminate.
+
+Pros:
+
+easy implementation
+
+high precision
+
+Cons:
+
+low efficiency
+
+require a lot of train data
+
+it assumes that words have the same meaning each time, but in real world
+one world can have different meanings

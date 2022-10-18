@@ -154,7 +154,7 @@ test <-  read.csv(file = test_path, stringsAsFactors = FALSE)
 X = train[, -length(train)]
 y = train[length(train)]
 X_test = test[, -length(test)]
-y_test = test[length(test)]
+y_test = test[length(test),]
 print(y_test)
 
 ```
@@ -236,14 +236,15 @@ naiveBayes <- setRefClass("naiveBayes",
                     # try how well your model generalizes to real world data! 
                     score = function(X_test, y_test)
                     {
-                      len = length(y_test)
+                      len <<- nrow(y_test)
                       good_predictions = 0
-                      for (i in seq(1,100)) {
+                      for (i in seq(1,len)) {
                         if (X_test[i,3]==predict(y_test[i,1])) {
                           good_predictions <- good_predictions + 1
                         }
                       }
-                      results = good_predictions/100
+                      good_predictions<<-good_predictions
+                      results = good_predictions/len
                       return(results)
                     }
 ))
@@ -252,7 +253,22 @@ model = naiveBayes()
 model$fit(X, y)
 model$score(X_test, y_test)
 ```
+```{r}
+x <-  c(len-good_predictions, good_predictions)
+labels <-  c("Wrong", "Correct")
 
+piepercent<- round(100*x/len, 1)
+
+# Give the chart file a name.
+#png(file = "Naive_Bayes_formula.jpg")
+# Plot the chart.
+pie(x, labels = piepercent, main = "Persentage of success",col = rainbow(length(x)))
+legend("bottomright", c("Wrong ansver", "Correct ansver"), cex = 1,
+   fill = rainbow(length(x)))
+
+# Save the file.
+#dev.off()
+```
 ## Measure effectiveness of your classifier
 
 -   Note that accuracy is not always a good metric for your classifier.
